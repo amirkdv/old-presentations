@@ -1,0 +1,409 @@
+<!DOCTYPE html><html><head>
+<title>chef-drupal.md</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=1024, user-scalable=no">
+
+<!-- Required stylesheet -->
+<link rel="stylesheet" href="resources/deck.js/core/deck.core.css">
+
+<!-- Extension CSS files go here. Remove or add as needed. -->
+<link rel="stylesheet" href="resources/deck.js/extensions/goto/deck.goto.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/menu/deck.menu.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/navigation/deck.navigation.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/status/deck.status.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/hash/deck.hash.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/scale/deck.scale.css">
+
+<!-- Style theme. More available in /themes/style/ or create your own. -->
+<link rel="stylesheet" href="resources/amir-deck.css">
+
+<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+<link rel="stylesheet" href="resources/deck.js/themes/transition/vertical-slide.css">
+
+<!-- Required Modernizr file -->
+<script src="resources/deck.js/modernizr.custom.js"></script>
+
+<!-- Roboto Slab typeface -->
+<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:300,700' rel='stylesheet' type='text/css'>
+
+<!-- Google Code Prettify -->
+<link rel="stylesheet" href="resources/google-code-prettify/styles/desert.css">
+</head><body class='deck-container'><section class='slide'>
+<div style ="margin:1.5em auto;font-size:1.4em;">
+Drupal Development/Deployment with Chef
+</div>
+
+<p><img src="resources/img/name.png" style="position:absolute; bottom:1em;
+right:1em;"></p>
+
+</section><section class="slide">
+
+<h2>Outline</h2>
+
+<ul>
+<li class="slide">Virtualization</li>
+<li class="slide">Automated Infrastructure</li>
+<li class="slide">A little bit of Ruby</li>
+<li class="slide">Chef</li>
+<li class="slide">Chef for Drupal</li>
+</ul>
+
+</section><section class="slide">
+
+<h2>DEV machines</h2>
+
+<ul>
+<li class="slide">Works on my machine</li>
+<li class="slide">Take hours (if not days) to setup</li>
+<li class="slide">Hard to maintain</li>
+<li class="slide">Still unpredictable (unknown <strong>state</strong>)</li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Virtualization</h2>
+
+</section><section class="slide">
+
+<h2><img src="resources/img/vagrant-200.png" alt="" title="" /></h2>
+
+<ul>
+<li class="slide">Providers: VirtualBox, VMware, EC2, LXC</li>
+<li class="slide">Boxes: <a href="http://www.vagrantbox.es">www.vagrantbox.es</a></li>
+<li class="slide">Networking</li>
+<li class="slide">Synced Folders</li>
+<li class="slide">Gotchas</li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Vagrant</h2>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+Vagrant.configure("2") do |config|
+  config.vm.box = "my_box"
+
+  # if my_box not found: 'vagrant box add'
+  config.vm.box_url = [url/to/download/box]
+
+  # configure the box:
+  config.vm.provision :shell, :inline =&gt; "apt-get install -y apache2"
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Is it all good now?</h2>
+
+<ul>
+<li class="slide">Can we configure all boxes with bash commands?</li>
+<li class="slide">What about deployment?</li>
+<li class="slide">High risk of change
+<ul>
+<li class="slide">remember Agile?</li>
+</ul></li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Automated Infrastructure</h2>
+
+<ul>
+<li class="slide">Infrastructure as code
+<ul>
+<li class="slide">Deterministic pre-defined state</li>
+<li class="slide">Version Control!</li>
+</ul></li>
+<li class="slide"><code>dev == prod</code></li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Automated Infrastructure</h2>
+
+<h4>what you get:</h4>
+
+<ul>
+<li class="slide">One step build and deploy</li>
+<li class="slide">Continuous Integration</li>
+<li class="slide">Continuous Deployment
+<ul>
+<li class="slide">Flickr: <strong>10</strong> deployments/day</li>
+<li class="slide">Etsy: <strong>25+</strong> deployments/day</li>
+</ul></li>
+<li class="slide">Self-Documenting: defines your infrastructure API</li>
+</ul>
+
+</section><section class="slide">
+
+<h2><img src="resources/img/chef.png" width="400px"/></h2>
+
+<ul>
+<li class="slide">Design Principles:
+<ul>
+<li class="slide">Idempotent </li>
+<li class="slide">Data-driven</li>
+<li class="slide">Sane defaults</li>
+<li class="slide">Hackability</li>
+<li class="slide">TIMTOWDI</li>
+</ul></li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+def double (x)
+  return 2*x
+end
+puts double 12 # =&gt; 24
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby"> 
+:hello == 'hello'.to_sym
+
+if File.exists? 'foo'
+  puts "found it"
+end
+
+puts "found it" if File.exists? 'foo'
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+['John','Mary', 'Bob'].each do |guest|
+  puts 'Pleased to meet you #{guest}!'
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h3>How does it work?</h3>
+
+<ul>
+<li class="slide">Nodes</li>
+<li class="slide">Attributes</li>
+<li class="slide">Resources</li>
+<li class="slide">Recipes and Cookbooks
+<ul>
+<li class="slide">Run Lists</li>
+</ul></li>
+<li class="slide">Assets: Files and Templates</li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Attributes</h4>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-json">
+  {
+    "mysql": {
+      "server_root_password": "root",
+    },
+    "apache2":{
+      "listen_ports": ["80","8000"]
+    }
+  }
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Resources</h4>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+directory "/path/to/some/directory" do
+  owner "user1"
+  group "group1"
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Resources</h4>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+execute "some-task" do
+  cwd "/path/to/some/directory"
+  command "command --with-some options"
+  creates "/path/to/some/file"
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Resources</h4>
+
+<p><div style="font-size:0.6em"></p>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+execute "my-important-file" do
+  command "cp -Rf /vagrant/. #{node['drupal-camp']['the-directory']}/"
+  creates node['drupal-camp']['the-directory'] + "/foo.txt"
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Templates</h4>
+
+<p><div style="font-size:0.6em"></p>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+template "/path/to/install/foo.sh" do
+  source "foo.sh.erb"
+  variables({
+    :user =&gt; node['apache']['user'], # =&gt; www-data
+    :group =&gt; node['deploy']['dev_group'], # =&gt; sysadmin
+  })
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Chef</h2>
+
+<h4>Templates</h4>
+
+<p><code>my_template.sh.erb</code>:</p>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-bash">
+# script generated by Chef
+#! /bin/bash
+chown &lt;%= @user %&gt;:&lt;%= @group %&gt; /var/www
+</code></pre>
+
+<p><code>/path/to/install/foo.sh</code>:</p>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-bash">
+# script generated by Chef
+#! /bin/bash
+chown www-data:sysadmin /var/www
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Vagrant + Chef</h2>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+Vagrant.configure("2") do |config|
+  config.vm.box = "my_box"
+
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = ['my_cookbooks']
+    # add recipes to Chef run list:
+    chef.add_recipe 'drupal-camp::default' 
+    # assign Chef attributes:
+    chef.json.merge!({
+      'drupal-camp' =&gt; {
+        'important-foo' =&gt; '/path/to/foo'
+      },
+      'mysql' =&gt; {
+        'root_password' =&gt; 'super_secret'
+      }
+    })   
+  end
+end
+</code></pre>
+
+</section><section class="slide">
+
+<h2>Cookbook Management</h2>
+
+<ul>
+<li class="slide">You want to keep your cookbooks as small as possible</li>
+<li class="slide">You do not want to recreate existing community cookbooks</li>
+<li class="slide">You do not want to manually version control all your dependencies</li>
+<li class="slide">You do not even want to manually download all your dependencies</li>
+<li class="slide">Cookbook management tools:
+<ul>
+<li class="slide">Berkshelf</li>
+<li class="slide">Librarian-Chef</li>
+</ul></li>
+</ul>
+
+</section><section class="slide">
+
+<h2>Cookbook Management</h2>
+
+<p>Berkshelf</p>
+
+<pre class="prettyprint"><code style="font-family=source code pro;"class="language-ruby">
+site :opscode # opscode community cookbooks
+
+cookbook 'foo', :path =&gt; '/path/to/foo'
+cookbook 'bar', :git =&gt; 'git://url/to/bar'
+cookbook 'apache2'
+</code></pre>
+</section>
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="resources/#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="resources/#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="resources/." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="resources/deck.js/jquery-1.7.2.min.js"></script>
+<script src="resources/deck.js/core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="resources/deck.js/deck.js/core/deck.core.js"></script>
+<script src="resources/deck.js/extensions/hash/deck.hash.js"></script>
+<script src="resources/deck.js/extensions/menu/deck.menu.js"></script>
+<script src="resources/deck.js/extensions/goto/deck.goto.js"></script>
+<script src="resources/deck.js/extensions/status/deck.status.js"></script>
+<script src="resources/deck.js/extensions/navigation/deck.navigation.js"></script>
+<script src="resources/deck.js/extensions/scale/deck.scale.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+<script src="resources/google-code-prettify/src/run_prettify.js"></script>
+</body></html>
