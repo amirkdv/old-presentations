@@ -30,12 +30,13 @@ echo "<!DOCTYPE html><html><head>"
 echo "<title>$1</title>"
 cat resources/head.html
 echo "</head><body class='deck-container'><section class='slide'>"
-
+LOGO_DIV="<div\ style='position:absolute;width:500px;bottom:0;right:1em;'><img\ src='resources\/img\/$2'\ width='200px'\ style='float:right;'\/><\/div>"
+test -f resources/img/$2 || LOGO_DIV=""
 cat $1| sed 's/-\{2,\}end-\{2,\}/\n--end--\n/'\
       | markdown \
       | sed 's/<pre>/<pre class="prettyprint">/' \
-      | sed 's/<code>\s*#\+\([a-zA-Z]*\)/<code style="font-family=source code pro;"class="language-\1">/' \
-      | sed 's/<p>--end--<\/p>/<\/section><section class="slide">/' \
+      | sed 's/<code>\s*#\+\([a-zA-Z]*\)/<code class="language-\1">/' \
+      | sed "s/<p>--end--<\/p>/$LOGO_DIV<\/section><section class='slide'>/" \
       | sed 's/<li>/<li class="slide">/'
 
 echo "</section>"

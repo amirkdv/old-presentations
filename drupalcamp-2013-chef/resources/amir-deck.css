@@ -19,6 +19,10 @@
   border-color: #ccc;
   border-radius:10px;
 }
+.deck-container pre.prettyprint{
+  font-size:0.6em;
+  padding:1em;
+}
 .deck-container .slide code{
   font-family: "Courier 10 pitch";
 }
