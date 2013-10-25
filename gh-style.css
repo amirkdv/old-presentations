@@ -18,6 +18,13 @@ body{
   margin:1em auto;
   text-align:center;
   list-style-type:none;
+  width:70%;
+}
+#content li{
+  margin:1em auto;
+}
+#content .note{
+  float:right;
 }
 #content a{
   background-color:#cddde6;
@@ -26,4 +33,3 @@ body{
   border-radius:5px;
   text-decoration:none;
 }
-
