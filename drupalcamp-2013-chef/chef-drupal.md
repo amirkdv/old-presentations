@@ -362,16 +362,22 @@ Attributes tell you a lot about what a cookbook does!
     end
     # mysql --user='root' --host='localhost' --password='root' -e "GRANT ALL ON  ..."
 --end--
-## What is automated?
+### What has been automated?
 * Zero to Live: Drupal 6 _and_ 7
 * Code Source can be: 
   * drupal.org _or_ git repo _or_ filesystem
 * Database can be populated from: 
   * database dump _or_ install schema via drush
-* Nginx Reverse proxy
-* Solr search integration
+* Solr search integration:
+  * Install Tomcat and Solr,
+  * Install Drupal Solr search module,
+  * Index Drupal data
+* Production Site considerations:
+  * Firewall configuration
+  * Nginx Reverse proxy
+  * Add custom post-provisioning script
 --end--
-## Recap
+## Review
 * Infrastructure Automation
 * Virtualization Technologies and Vagrant
 * Chef and how it works
