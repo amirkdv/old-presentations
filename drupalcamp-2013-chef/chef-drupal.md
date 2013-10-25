@@ -1,102 +1,136 @@
-<div style ="margin:1.5em auto;font-size:1.4em;">
-Drupal Development/Deployment with Chef
+<h2 style="margin:100px auto;font-size:2.2em; font-weight:bold;">
+  Cooking Drupal with Chef
+</h2>
+<div style="position: absolute; width:900px; bottom:1em;right:1em;">
+  <img src="resources/img/ew-good.png" style="height:130px; float:right;">
+  <code style="float:right; font-size:0.7em;">
+    <div style="font-size:1.2em; font-weight:bold;">Amir Kadivar </div>
+    <div> amir@evolvingweb.ca </div>
+    <div> github.com/amirkdv </div>
+  </code>
 </div>
-<img src="resources/img/name.png" style="position:absolute; bottom:1em;
-right:1em;">
 
 --end--
 
 ## Outline
 
+* Automated Infrastructure: Problem Definition 
 * Virtualization
-* Automated Infrastructure
-* A little bit of Ruby
+* Configuration Management
 * Chef
 * Chef for Drupal
 
 --end--
 
-## DEV machines
-* Works on my machine
-* Take hours (if not days) to setup
-* Hard to maintain
-* Still unpredictable (unknown **state**)
---end---
+## Problem Definition
 
-## Virtualization
+### development environments
+* consistency (with production and other devs)
+* choice of tools (limiting developers)
+* multiple platforms
+
+### testing and integration
+* is every commit tested?
+* test environment (testing a web application leaves a lot of cruft)
+
+### deployment
+* how do you go from zero to live site?
+* how frequent are changes pushed to production?
+
 --end--
 
-## ![](resources/img/vagrant-200.png)
-* Providers: VirtualBox, VMware, EC2, LXC
-* Boxes: [www.vagrantbox.es](http://www.vagrantbox.es)
-* Networking
-* Synced Folders
-* Gotchas
-----end----
-## Vagrant
+## Enters Virtualization
 
-    #ruby
-    Vagrant.configure("2") do |config|
-      config.vm.box = "my_box"
-      
-      # if my_box not found: 'vagrant box add'
-      config.vm.box_url = [url/to/download/box]
-      
-      # configure the box:
-      config.vm.provision :shell, :inline => "apt-get install -y apache2"
-    end
+* processes sharing hardware → O/S s sharing hardware
+* A VM is an _environment_ that a VM Monitor creates
+* These _environments_ should, ideally, be:
+  * isolated from each other
+  * equivalent to a real machine
+  * as efficient as a real machine
+* We have achieved all of these!
+--end--
 
----end----
-## Is it all good now?
-* Can we configure all boxes with bash commands?
-* What about deployment?
-* High risk of change
-  * remember Agile?
+## Virtualization Technologies
+
+* Types of VM Monitors
+* Methods of Virtualization
+* why is <img src="resources/img/vagrant-w-name.png" style="display:inline; vertical-align:middle;" height="100px;"/> relevant?
+
+--end---
+
+## How does Virtualization Help?
+
+<!-- * VMs are cheap to build and to throw away! -->
+
+### development:
+* VM for every project
+* VM for each developer
+
+### testing & integration:
+* spin up throwaway VM for tests, as frequently as you wish
+
+### deployment:
+* crufty prod? start from fresh VM
+* switch platform? start from fresh VM
+
+--end--
+
+## Missing Piece: Provisioning
+
+### VMs are cheap but:
+* how much work is it to configure a VM from _scratch_?
+* <div style="font-size:0.9em;">
+  how much of this work is reusable for a similar
+  _but not identical_ use case?</div>
+* <div style="font-size:0.9em;">
+  how do you maintain _consistent_ configuration
+  accross different machines?
+  </div>
+
+
+--end--
+
+## Config Management tools
+
+* Config described in a programming (instead of human) language:
+  * version control
+  * reusable
+* High level programming language instead of shell scripts
+  * cross-platform configuration
+  * more readable/maintainable
+
+--end--
+
+### <img src="resources/img/chef.png" width="400px"/> 
+* What is it exactly?
+* Concepts:
+  * State
+  * Resources
+  * Idempotence
+--end--
+
+## How does <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/> work?
+* Recipes and Cookbooks
+* Run Lists
+* Attributes
+* Assets: Files and Templates
+* Nodes and C/S Chef
 ---end---
 
-## Automated Infrastructure
-* Infrastructure as code
-  * Deterministic pre-defined state
-  * Version Control!
-* `dev == prod`
-----end----
-
-## Automated Infrastructure
-#### what you get:
-
-* One step build and deploy
-* Continuous Integration
-* Continuous Deployment
-  * Flickr: **10** deployments/day
-  * Etsy: **25+** deployments/day
-* Self-Documenting: defines your infrastructure API
-
------end----
-
-## <img src="resources/img/chef.png" width="400px"/> 
-* Design Principles:
-  * Idempotent 
-  * Data-driven
-  * Sane defaults
-  * Hackability
-  * TIMTOWDI
-
-----end---
 ## Ruby
 
     #ruby
+    # a function
     def double (x)
       return 2*x
-    end
+    end 
+    
     puts double 12 # => 24
-
+    
 --end----
-## Ruby
-
+## Ruby 
     #ruby 
-    :hello == 'hello'.to_sym
-
-    if File.exists? 'foo'
+    if File.exists? '/foo/bar.php'
       puts "found it"
     end
      
@@ -110,17 +144,36 @@ right:1em;">
     end
 ----end---
 
-## Chef
-### How does it work?
-  * Nodes
-  * Attributes
-  * Resources
-  * Recipes and Cookbooks
-    * Run Lists
-  * Assets: Files and Templates
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Resources
+    
+    #ruby
+    directory "/path/to/some/directory" do
+      owner "user1"
+      group "group1"
+    end
+----end---
+
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Resources
+
+    #ruby
+    execute "some-task" do
+      cwd "/path/to/some/directory"
+      command "command --with-some options"
+      creates "/path/to/some/file"
+    end
 ---end---
-## Chef
-#### Attributes
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>an idempotent resource
+<div style="font-size:0.6em">
+
+    #ruby
+    execute "my-important-file" do
+      command "cp -Rf /vagrant/. #{node['drupal-camp']['the-directory']}/"
+      creates node['drupal-camp']['the-directory'] + "/foo.txt"
+    end
+
+---end---
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Attributes
+    
     #json
       {
         "mysql": {
@@ -131,38 +184,7 @@ right:1em;">
         }
       }
 ---end---
-## Chef
-#### Resources
-    
-    #ruby
-    directory "/path/to/some/directory" do
-      owner "user1"
-      group "group1"
-    end
-----end---
-## Chef
-#### Resources
-
-    #ruby
-    execute "some-task" do
-      cwd "/path/to/some/directory"
-      command "command --with-some options"
-      creates "/path/to/some/file"
-    end
----end---
-## Chef
-#### Resources
-<div style="font-size:0.6em">
-
-    #ruby
-    execute "my-important-file" do
-      command "cp -Rf /vagrant/. #{node['drupal-camp']['the-directory']}/"
-      creates node['drupal-camp']['the-directory'] + "/foo.txt"
-    end
-
----end---
-## Chef
-#### Templates
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Templates
 <div style="font-size:0.6em">
 
     #ruby
@@ -174,8 +196,7 @@ right:1em;">
       })
     end
 ----end----
-## Chef
-#### Templates
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Templates
 `my_template.sh.erb`:
     
     #bash
@@ -189,46 +210,30 @@ right:1em;">
     # script generated by Chef
     #! /bin/bash
     chown www-data:sysadmin /var/www
+
+--end---
+## Let's see a simple Chef Run
+
 -----end---
-## Vagrant + Chef
+## <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle;"height="250px;"/> + <img src="resources/img/drupal.png" style="vertical-align:middle;display:inline;"height="250px;"/>
+### Platform configuration
+* HTTP Server(s)
+* Database
+* PHP
+* APC, memcached, Search, Reverse Proxy, Firewall, ...
 
-    #ruby
-    Vagrant.configure("2") do |config|
-      config.vm.box = "my_box"
-      
-      config.vm.provision :chef_solo do |chef|
-        chef.cookbooks_path = ['my_cookbooks']
-        # add recipes to Chef run list:
-        chef.add_recipe 'drupal-camp::default' 
-        # assign Chef attributes:
-        chef.json.merge!({
-          'drupal-camp' => {
-            'important-foo' => '/path/to/foo'
-          },
-          'mysql' => {
-            'root_password' => 'super_secret'
-          }
-        })   
-      end
-    end
----end----
-## Cookbook Management
+### Drupal configuration
+* download Drupal and connect to database
+* deploy existing project (codebase + database data)
+* manage modules
+--end---
 
-* You want to keep your cookbooks as small as possible
-* You do not want to recreate existing community cookbooks
-* You do not want to manually version control all your dependencies
-* You do not even want to manually download all your dependencies
-* Cookbook management tools:
-  * Berkshelf
-  * Librarian-Chef
+## Case Studies
+### deploy-drupal
+[github.com/evolvingweb/chef-deploy-drupal](http://github.com/evolvingweb/chef-deploy-drupal)
+### drupal-solr
+[github.com/evolvingweb/chef-drupal-solr](http://github.com/evolvingweb/chef-drupal-solr)
 
 --end----
-## Cookbook Management
-Berkshelf
-
-    #ruby
-    site :opscode # opscode community cookbooks
-
-    cookbook 'foo', :path => '/path/to/foo'
-    cookbook 'bar', :git => 'git://url/to/bar'
-    cookbook 'apache2'
+# Thank You!
+--end---

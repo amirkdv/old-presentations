@@ -1,26 +1,29 @@
 .deck-container {
-  font-family: "Roboto Slab";
+  font-family: "Cardo";
   font-size: 2.8em;
   background: #efefef;
 }
 .deck-container .slide {
   background: #efefef;
 }
-.deck-container .slide h1 {
+.deck-container .slide h1,
+.deck-container .slide h2{
+  font-family: "Roboto Slab";
   color: #2b4959;
 }
+
 .deck-container .slide h2 {
-  color: #2b4959;
   border-bottom-color: #d0dfe8; 
-}
-.deck-container .slide h3 {
-  color: #2b4959;
 }
 .deck-container .slide pre {
   border-color: #ccc;
   border-radius:10px;
 }
-.deck-container .slide code {
+.deck-container .slide code{
+  font-family: "Courier 10 pitch";
+}
+.deck-container .slide a{
+  font-size:0.8em;
   font-family: "Courier 10 pitch";
 }
 .deck-container .slide blockquote {
