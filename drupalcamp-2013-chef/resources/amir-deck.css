@@ -24,11 +24,11 @@
   padding:1em;
 }
 .deck-container .slide code{
-  font-family: "Courier 10 pitch";
+  font-family: "Source Code Pro";
 }
 .deck-container .slide a{
   font-size:0.8em;
-  font-family: "Courier 10 pitch";
+  font-family: "Source Code Pro";
 }
 .deck-container .slide blockquote {
   font-size: 2em;
